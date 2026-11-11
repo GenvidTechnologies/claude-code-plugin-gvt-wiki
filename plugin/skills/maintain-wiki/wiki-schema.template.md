@@ -1,6 +1,6 @@
 # Wiki Maintenance Schema
 
-> Project conventions consumed by `/gvt-dev:maintain-wiki`, which copies this
+> Project conventions consumed by `/gvt-wiki:maintain-wiki`, which copies this
 > file to the resolved schema path (`<wikiDir>/schema.md` unless overridden); edit it for your project. This is the **maintenance
 > schema** for the three-tier wiki: `raw/` (immutable captured sources) →
 > `<wikiDir>/` (LLM-maintained pages, `index.md`, `log.md`) → this schema (the rules
@@ -99,8 +99,8 @@ MUST NOT reject a bundle for missing optional frontmatter fields, a missing
 optional family (§5.3), unknown `type` values, unknown additional frontmatter
 keys, broken cross-links, or a missing `index.md` — and MUST treat a bare
 `verified` mapping as a one-element list. This bounds what a future mechanical
-linter (`lint`, below, and #150) may flag. The **binding** statement for
-`lint` and #150 lives in the skill body's `lint` section (plugin-owned, so it
+linter (`lint`, below, and gvt-dev#150) may flag. The **binding** statement for
+`lint` and gvt-dev#150 lives in the skill body's `lint` section (plugin-owned, so it
 survives edits to this file); this paragraph is the format's own statement of
 the same clauses.
 
@@ -164,14 +164,14 @@ settled architecture omit stale_after or set it a year out." -->
 
 ## The verb contract
 
-`/gvt-dev:maintain-wiki` operates through three verbs:
+`/gvt-wiki:maintain-wiki` operates through three verbs:
 
 - **`ingest`** — read new or changed files under `raw/`, write new `<wikiDir>/`
   pages or update existing ones per the lifecycle rule above, and append one
   entry per source to `<wikiDir>/log.md`.
 - **`query`** — answer a question **from the wiki**, with citations back to
   the pages (and, transitively, the `raw/` sources) that support the answer.
-  Query is served by the `gvt-dev:wiki-librarian` agent so exploration stays
+  Query is served by the `gvt-wiki:wiki-librarian` agent so exploration stays
   off the main thread.
 - **`lint`** — an advisory health check, not a mutation. It flags: dead
   wiki-links (a `Related` link to a page that no longer exists), out-of-bundle

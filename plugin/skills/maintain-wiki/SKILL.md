@@ -44,12 +44,11 @@ first use.
 ## How the work splits
 
 - **`query` → subagent.** Reading and synthesizing an answer runs in the
-  read-only `gvt-dev:wiki-librarian` agent, off this thread, so the wiki's
+  read-only `gvt-wiki:wiki-librarian` agent, off this thread, so the wiki's
   content never has to be pulled fully into the orchestrating conversation.
-- **`ingest` writes → `gvt-dev:tech-writer`.** Authoring or updating a `<wikiDir>/`
-  page is a write, dispatched to `tech-writer` under the single-writer-per-file
-  discipline (see `condense-lessons` for the precedent) rather than performed
-  ad hoc on this thread.
+- **`ingest` writes → `gvt-wiki:wiki-editor`.** Authoring or updating a `<wikiDir>/`
+  page is a write, dispatched to `wiki-editor` under the single-writer-per-file
+  discipline rather than performed ad hoc on this thread.
 - **`lint` → here.** The health check reads across `<wikiDir>/` and (optionally)
   `raw/` history directly; it's advisory and read-only, so there's no
   write-safety reason to delegate it.
@@ -64,7 +63,9 @@ first use.
    Three locations, in this order:
    1. `paths['docs/wiki-schema.md']` in `.gvt-agent.json`, when set. The
       override wins outright, whether or not a file exists at the other two
-      (`CONVENTIONS.md`, "Runtime path resolution").
+      (a `paths` override is read from `.gvt-agent.json` and wins over the
+      default; see "Runtime path resolution" in
+      [gvt-dev's `CONVENTIONS.md`](https://github.com/GenvidTechnologies/claude-code-plugin-gvt-dev/blob/main/plugin/CONVENTIONS.md)).
    2. `<wikiDir>/schema.md` — inside the bundle, the default.
    3. `docs/wiki-schema.md` — the legacy location, still honoured.
 
@@ -154,8 +155,7 @@ first use.
      discovery surface.
    - **Outside the bundle** (an override naming, say, a `docs/` location): add the entry
      to `docs/TOC.md` under a **Knowledge Base** heading (create the heading if
-     absent) — mirroring how `plan-task` indexes a scaffolded `docs/decisions/`
-     record and `triage-issues` indexes `docs/issue-triage.md`.
+     absent), mirroring that index's existing entry shape.
 
    Interactively, **offer** it; in `--non-interactive`, add it **automatically**.
    Make it **idempotent** (skip when a link in that index already resolves to
@@ -177,27 +177,31 @@ already sitting in `<rawDir>/` — into compounding `<wikiDir>/` content.
    gets a new page under `<wikiDir>/<topic-slug>.md`; new facts about a topic
    already covered get folded into the existing page in place — never a
    second thin page for the same topic.
-3. **Dispatch `gvt-dev:tech-writer`** to author (new page) or update
-   (existing page) per the page format and lifecycle rules in
-   the schema (§0 step 1). The **same** dispatch also owns the two bookkeeping
+3. **Dispatch `gvt-wiki:wiki-editor`** with the target page path and mode
+   (create or update), the source(s), the resolved `wikiDir`, `rawDir` and
+   schema path, and the `generated.at` timestamp. Get the timestamp first: run
+   `date -u +%Y-%m-%dT%H:%M:%SZ` on this thread and pass the result in the
+   brief (`wiki-editor` has no shell). The editor authors or updates the page
+   per the page format and lifecycle rules in the schema (§0 step 1). The
+   **same** dispatch also owns the two bookkeeping
    writes for that run — registering a new page in `<wikiDir>/index.md` and
    appending one entry per source to `<wikiDir>/log.md` — so the page and its
    index/log entries land as one consistent unit. Keep the
-   single-writer-per-file discipline: one `tech-writer` dispatch owns the page,
+   single-writer-per-file discipline: one `wiki-editor` dispatch owns the page,
    the index, and the log for a given run; don't parallelize two ingests that
    both touch `index.md`/`log.md`.
-4. **Report** what was created/updated and the log entries appended.
+4. **Report** what was created/updated and the log entries appended. List the
+   changed paths as uncommitted: `wiki-editor` never stages or commits, so the
+   caller commits them.
 
-**This is a new, thin verb — it does not replace or rewrite `run-retro` or
-`condense-lessons`.** Those remain the session-retro and lessons-doc ingest
-surfaces respectively; `ingest` is the wiki tier's own entry point, and
-`condense-lessons` already cross-references it as one durable home an
-extracted insight can land in.
+**This is a thin verb — it does not replace any session-retro or lessons-doc
+capture a project already runs.** `ingest` is the wiki tier's own entry point,
+and a captured insight can land here as one durable home.
 
 ## `query`
 
 1. Resolve `<wikiDir>`/`<rawDir>` (§0 step 1).
-2. **Dispatch `gvt-dev:wiki-librarian`** with the question and the resolved
+2. **Dispatch `gvt-wiki:wiki-librarian`** with the question and the resolved
    paths, the schema doc's included. The agent is read-only: it consults `<wikiDir>/index.md`, reads the
    relevant page(s), traces provenance into `<rawDir>/` when needed, and
    returns one structured, cited answer (see the agent's Output Format).
@@ -277,7 +281,7 @@ mutates anything. Checks, run against `<wikiDir>/` (and optionally `<rawDir>/`):
   sits elsewhere. A note, never a failure; `lint` changes neither file.
 
 **A script implements the deterministic subset of this list.**
-`plugin/skills/maintain-wiki/scripts/wiki-lint.mjs`, run as
+`skills/maintain-wiki/scripts/wiki-lint.mjs` (relative to the plugin root), run as
 `node <path-to-script> [repoPath]` (defaulting `repoPath` to the current
 directory), covers dead wiki-links, out-of-bundle links, orphaned pages and
 unreachable subtrees, and `raw/` immutability. Run it instead of re-deriving
@@ -287,7 +291,7 @@ without ever failing a build; there is deliberately no `--strict` flag yet.
 Its output distinguishes *checked and clean* from *could not check* (a
 missing bundle-root index, an absent bundle, git unavailable, no history
 under `raw/`), and that distinction is the point rather than a formatting
-nicety: a report that renders both as "0 findings" is the defect ADR-0053
+nicety: a report that renders both as "0 findings" is the defect gvt-dev ADR-0053
 removed from the audit's own scanners. The script covers the mechanical
 checks only — staleness beyond a declared `stale_after` and any judgment
 about semantic drift stay yours; no script can make either call.
@@ -319,44 +323,47 @@ cutoff and is labelled a candidate rather than a "stale" determination.
 
 The schema's **"Tolerated, never rejected"** paragraph is the page
 format's own statement of these same clauses; **this** block is the binding one
-for `lint` and for the mechanical checker (#150).
+for `lint` and for the mechanical checker (gvt-dev#150).
 
 **Advisory is not rejection.** Reporting an orphan, a dead link, or an
 out-of-bundle link is fully conformant — §11 bounds what a consumer may
 *reject a bundle for*, and `lint` rejects nothing: it never fails, never
 refuses to read a page, never exits non-zero. **This is the bound on the
-mechanical checker (#150):** it may *report* any of the six cases above, but
+mechanical checker (gvt-dev#150):** it may *report* any of the six cases above, but
 must never turn one into an error, a hard failure, or a non-zero exit — and if
 it offers an opt-in strict/exit-code mode, a §11-tolerated finding must not be
 what fails it. A consuming repo may hold itself to a stricter *local* policy in
 its own schema doc; that is project policy, never an OKF requirement
 and never a plugin default.
 
-**Boundary with #150 — `lint` does not check §11.1–11.2 conformance.** Whether
+**Boundary with gvt-dev#150 — `lint` does not check §11.1–11.2 conformance.** Whether
 every non-reserved `.md` under `<wikiDir>/` (at any depth, excluding `index.md`
 and `log.md` at any level) carries parseable frontmatter with a non-empty
 `type` is the **mechanical checker's** walk, not this verb's. It is
 deliberately deferred, not forgotten: skill-mode `lint` owns the checks listed
-above; #150 owns the conformance walk and inherits the constraint stated here.
+above; gvt-dev#150 owns the conformance walk and inherits the constraint stated here.
 Neither side should assume the other already does it.
 
-**`lint` is never invoked from `audit-conventions`.** It is a `maintain-wiki`
-skill verb only, run on demand by the user or a dispatching skill — it is not
-wired into `audit.mjs` and must not be. This keeps a consuming repo's audit
-exit code independent of wiki content health (a wiki-content problem is not a
+**`lint` is never invoked from gvt-dev's `audit-conventions`.** `audit-conventions`
+is a skill of a separate plugin, gvt-dev. `lint` is a `maintain-wiki` skill verb
+only, run on demand by the user or a dispatching skill. It is not wired into
+that audit and must not be. This keeps a consuming repo's audit exit code
+independent of wiki content health (a wiki-content problem is not a
 plugin-contract violation), and respects the boundary with the audit's own
-wiki *detection/migration* scope (a separate concern, tracked under #146):
+wiki *detection/migration* scope (a separate concern, tracked under gvt-dev#146):
 `audit-conventions` may one day detect that a repo has a wiki and offer to
 migrate its scaffold, but it does not — and will not — run `lint`'s content
 checks itself.
 
-One exception to "never wired into `audit.mjs`" is content, not the `lint`
-verb itself: `audit-conventions`' retired-token hygiene scanner
-(`scanRetiredTokens`) does reach `<wikiDir>/`, because `lint` has no
-retired-token check of its own — dead-wiki-links and orphaned pages stay
-`lint`'s alone, unchanged by this. See `plugin/CONVENTIONS.md`'s `hygiene`
-paragraph for the full per-scanner scope table and ADR-0041 for why.
+One exception to "never wired into the audit" is content, not the `lint`
+verb itself: the audit's retired-token hygiene scanner (`scanRetiredTokens`)
+does reach `<wikiDir>/`, because `lint` has no retired-token check of its
+own — dead-wiki-links and orphaned pages stay `lint`'s alone, unchanged by
+this. See the `hygiene` paragraph of
+[gvt-dev's `CONVENTIONS.md`](https://github.com/GenvidTechnologies/claude-code-plugin-gvt-dev/blob/main/plugin/CONVENTIONS.md)
+for the per-scanner scope table; the scanners that reach `<wikiDir>/` are
+gvt-dev's, not this plugin's, and gvt-dev ADR-0041 records why.
 
 ## Writing style
 
-**Write technical text in the gvt-dev writing style.** Use short, direct sentences. Give each component one name and use it every time. Keep what you observed apart from what you infer and from what you checked. Put one action in each procedural step. Keep every condition, warning and statement of uncertainty. Say what each check can establish. Do not invent a measurement or a diagnosis. Text that ships (a doc, a code comment, a test name, a commit, an issue or PR body) is written in its own voice: it carries no instruction to its writer and no plan task id such as "T3". The style is inspired by ASD-STE100 and is not compliance with it. The full rules are in `${CLAUDE_PLUGIN_ROOT}/docs/writing-style.md`.
+**Write technical text in short, direct sentences.** Give each component one name and use it every time. Keep what you observed apart from what you infer and from what you checked. Put one action in each procedural step. Keep every condition, warning and statement of uncertainty. Say what each check can establish. Do not invent a measurement or a diagnosis. Text that ships (a doc, a code comment, a test name, a commit, an issue or PR body) is written in its own voice: it carries no instruction to its writer and no plan task id. The style is inspired by ASD-STE100 and is not compliance with it. Wiki pages follow OKF v0.2. Project conventions come from `<wikiDir>/schema.md`.

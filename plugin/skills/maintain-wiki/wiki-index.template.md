@@ -4,13 +4,13 @@ okf_version: "0.2"
 
 <!-- `okf_version` is the ONLY frontmatter key permitted here (§8/§12) — this
      file scaffolds the bundle-root index (`<wikiDir>/index.md`, the OKF
-     bundle root per ADR-0022). A `<wikiDir>/<subdir>/index.md` carries NO
+     bundle root per gvt-dev ADR-0022). A `<wikiDir>/<subdir>/index.md` carries NO
      frontmatter at all. -->
 
 # Wiki Index
 
 This is the wiki's table of contents — every page under `<wikiDir>/`,
-grouped under section headings, one line each. `/gvt-dev:maintain-wiki`
+grouped under section headings, one line each. `/gvt-wiki:maintain-wiki`
 keeps this list current: a new page is added here when it's created, and
 `lint` flags any page listed in **no** index — here, or in a
 subdirectory's own `index.md`. Each entry's description is the linked

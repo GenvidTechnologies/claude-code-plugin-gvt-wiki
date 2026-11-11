@@ -1,7 +1,7 @@
 # raw/
 
 This directory holds **immutable captured sources** for the project wiki
-maintained by `/gvt-dev:maintain-wiki` — transcripts, doc snapshots, decision
+maintained by `/gvt-wiki:maintain-wiki` — transcripts, doc snapshots, decision
 records, data dumps, or anything else worth ingesting into `<wikiDir>/`, exactly as
 captured.
 

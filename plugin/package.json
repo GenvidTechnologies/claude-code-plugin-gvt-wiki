@@ -1,0 +1,7 @@
+{
+  "name": "gvt-wiki",
+  "private": true,
+  "dependencies": {
+    "shell-quote": "1.12.0"
+  }
+}

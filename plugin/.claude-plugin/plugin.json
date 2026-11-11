@@ -1,0 +1,11 @@
+{
+  "name": "gvt-wiki",
+  "version": "0.1.0",
+  "description": "Maintain a project wiki in the OKF format: the maintain-wiki skill, its wiki-lint script, and the hooks that keep the wiki consistent.",
+  "author": {
+    "name": "Genvid"
+  },
+  "repository": "https://github.com/GenvidTechnologies/claude-code-plugin-gvt-wiki",
+  "license": "MIT-0",
+  "keywords": ["genvid", "wiki", "documentation"]
+}

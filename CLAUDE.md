@@ -52,7 +52,8 @@ CI (`.github/workflows/ci.yml`) runs the tests on `ubuntu-latest` and `windows-l
 - The files under `plugin/skills/maintain-wiki/scripts/` were moved byte-identical from the gvt-dev repository (see `MIGRATION.md`). Code comments there refer to gvt-dev issues and ADRs (`#NNN`, `ADR-NNNN`). Do not rewrite those references.
 - The git-state guard acts only on subagents whose type starts with `gvt-wiki:`. A command from the main thread, or from any other agent, passes through.
 - `wiki-editor` has no Bash tool. It never stages or commits. Keep it that way. The caller of `ingest` commits.
-- Text that ships under `plugin/` does not name the gvt-dev namespace or cite its docs. The leak-guard script checks this. Root files (`README.md`, `MIGRATION.md`) may name the old namespace.
+- Text under `plugin/` has no `gvt-dev:<name>` colon form and no `${CLAUDE_PLUGIN_ROOT}/docs/` citation. Exception: `plugin/hooks/test/` names `gvt-dev:validator` to prove the guard is not widened. Plain mentions of "the gvt-dev plugin" and GitHub URLs to gvt-dev's `CONVENTIONS.md` (the `wiki` block contract, gvt-dev ADR-0096) are allowed. No script runs this check. Run it by hand: `git grep -n -E 'gvt-dev:[a-z]|CLAUDE_PLUGIN_ROOT[}]/docs/' -- plugin ':!plugin/hooks/test/'` must print nothing. Root files (`README.md`, `MIGRATION.md`) may name the old namespace.
+- The leak-guard script (`.github/scripts/leak-guard.sh`) keeps only the local-path rule. gvt-dev's `@genvidtech` scope rule does not apply here, because this plugin has no `@genvidtech` dependency.
 - Write technical text in short, direct sentences, with one name per component.
 
 ## Releasing

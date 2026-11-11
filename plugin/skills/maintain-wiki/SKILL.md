@@ -63,8 +63,7 @@ first use.
    Three locations, in this order:
    1. `paths['docs/wiki-schema.md']` in `.gvt-agent.json`, when set. The
       override wins outright, whether or not a file exists at the other two
-      (a `paths` override is read from `.gvt-agent.json` and wins over the
-      default; see "Runtime path resolution" in
+      (see "Runtime path resolution" in
       [gvt-dev's `CONVENTIONS.md`](https://github.com/GenvidTechnologies/claude-code-plugin-gvt-dev/blob/main/plugin/CONVENTIONS.md)).
    2. `<wikiDir>/schema.md` — inside the bundle, the default.
    3. `docs/wiki-schema.md` — the legacy location, still honoured.
@@ -171,17 +170,24 @@ already sitting in `<rawDir>/` — into compounding `<wikiDir>/` content.
    insight(s) handed in directly, a specific source or insight named by the
    caller, or one or more files already captured under `<rawDir>/` that
    haven't been ingested yet (cross-reference `<wikiDir>/log.md` to find
-   which `<rawDir>/` files have no corresponding log entry).
+   which `<rawDir>/` files have no corresponding log entry). The schema
+   requires every source to be a capture under `<rawDir>/`: a page cites it
+   through `sources[]`. So an insight with no capture is saved first as a new
+   file under `<rawDir>/`, by this thread. `wiki-editor` never writes under
+   `<rawDir>/`. Note the upstream URL and the capture date (`YYYY-MM-DD`) of
+   each source. The editor needs both, and a capture does not record them.
 2. **Resolve the target page** using the create-vs-update rule in
    the schema's (§0 step 1) "Page lifecycle" section: a genuinely new topic
    gets a new page under `<wikiDir>/<topic-slug>.md`; new facts about a topic
    already covered get folded into the existing page in place — never a
    second thin page for the same topic.
 3. **Dispatch `gvt-wiki:wiki-editor`** with the target page path and mode
-   (create or update), the source(s), the resolved `wikiDir`, `rawDir` and
-   schema path, and the `generated.at` timestamp. Get the timestamp first: run
+   (create or update), the source(s) as capture paths with each upstream URL
+   and capture date, the resolved `wikiDir`, `rawDir` and schema path, and the
+   `generated.at` timestamp. Get the timestamp first: run
    `date -u +%Y-%m-%dT%H:%M:%SZ` on this thread and pass the result in the
-   brief (`wiki-editor` has no shell). The editor authors or updates the page
+   brief (`wiki-editor` has no shell). The editor takes today's date, for the
+   log heading and `stale_after`, from the date part of that timestamp. The editor authors or updates the page
    per the page format and lifecycle rules in the schema (§0 step 1). The
    **same** dispatch also owns the two bookkeeping
    writes for that run — registering a new page in `<wikiDir>/index.md` and
@@ -292,7 +298,7 @@ Its output distinguishes *checked and clean* from *could not check* (a
 missing bundle-root index, an absent bundle, git unavailable, no history
 under `raw/`), and that distinction is the point rather than a formatting
 nicety: a report that renders both as "0 findings" is the defect gvt-dev ADR-0053
-removed from the audit's own scanners. The script covers the mechanical
+removed from gvt-dev's audit scanners. The script covers the mechanical
 checks only — staleness beyond a declared `stale_after` and any judgment
 about semantic drift stay yours; no script can make either call.
 
@@ -349,14 +355,14 @@ is a skill of a separate plugin, gvt-dev. `lint` is a `maintain-wiki` skill verb
 only, run on demand by the user or a dispatching skill. It is not wired into
 that audit and must not be. This keeps a consuming repo's audit exit code
 independent of wiki content health (a wiki-content problem is not a
-plugin-contract violation), and respects the boundary with the audit's own
-wiki *detection/migration* scope (a separate concern, tracked under gvt-dev#146):
-`audit-conventions` may one day detect that a repo has a wiki and offer to
+plugin-contract violation), and respects the boundary with the wiki *detection/migration* scope of
+gvt-dev's audit (a separate concern, tracked under gvt-dev#146):
+gvt-dev's `audit-conventions` may one day detect that a repo has a wiki and offer to
 migrate its scaffold, but it does not — and will not — run `lint`'s content
 checks itself.
 
 One exception to "never wired into the audit" is content, not the `lint`
-verb itself: the audit's retired-token hygiene scanner (`scanRetiredTokens`)
+verb itself: gvt-dev's retired-token hygiene scanner (`scanRetiredTokens`)
 does reach `<wikiDir>/`, because `lint` has no retired-token check of its
 own — dead-wiki-links and orphaned pages stay `lint`'s alone, unchanged by
 this. See the `hygiene` paragraph of
@@ -366,4 +372,4 @@ gvt-dev's, not this plugin's, and gvt-dev ADR-0041 records why.
 
 ## Writing style
 
-**Write technical text in short, direct sentences.** Give each component one name and use it every time. Keep what you observed apart from what you infer and from what you checked. Put one action in each procedural step. Keep every condition, warning and statement of uncertainty. Say what each check can establish. Do not invent a measurement or a diagnosis. Text that ships (a doc, a code comment, a test name, a commit, an issue or PR body) is written in its own voice: it carries no instruction to its writer and no plan task id. The style is inspired by ASD-STE100 and is not compliance with it. Wiki pages follow OKF v0.2. Project conventions come from `<wikiDir>/schema.md`.
+**Write technical text in short, direct sentences.** Give each component one name and use it every time. Keep what you observed apart from what you infer and from what you checked. Put one action in each procedural step. Keep every condition, warning and statement of uncertainty. Say what each check can establish. Do not invent a measurement or a diagnosis. Text that ships (a doc, a code comment, a test name, a commit, an issue or PR body) is written in its own voice: it carries no instruction to its writer and no plan task id. The style is inspired by ASD-STE100 and is not compliance with it. Wiki pages follow OKF v0.2. Project conventions come from the resolved schema path (§0 step 1).

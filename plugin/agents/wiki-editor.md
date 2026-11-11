@@ -29,11 +29,10 @@ You change files with `Write` and `Edit` only. You have no shell. You do not sta
 
 The dispatch prompt gives you:
 
-- **The sources** to ingest: the capture files under `<rawDir>/`, and the upstream URL of each.
+- **The sources** to ingest. Each source is a capture file under `<rawDir>/`. The dispatch gives, for each capture, its upstream URL and its capture date (`YYYY-MM-DD`). A source with no capture file is not ingested; the caller saves it as a capture first.
 - **The `wiki` block** from `.gvt-agent.json`: `wikiDir` (default `wiki`) and `rawDir` (default `raw`). Use the defaults when the block or a key is absent.
-- **The schema path.** This is `<wikiDir>/schema.md` unless the dispatch gives another path.
-- **The `generated.at` value**: an ISO timestamp (`YYYY-MM-DDTHH:MM:SSZ`). Copy it into each page you write. Do not compute it yourself.
-- **Today's date**, for the log heading and for `stale_after`.
+- **The schema path**, as the dispatch gives it.
+- **The `generated.at` value**: an ISO timestamp (`YYYY-MM-DDTHH:MM:SSZ`). Copy it into each page you write. Do not compute it yourself. Its date part is today's date, for the log heading and for `stale_after`.
 
 ## Process
 
@@ -54,11 +53,12 @@ Pages follow OKF v0.2. The schema file is the authority on the format. If it dif
 - `title`, `description`, `tags`, `status`: write all four. `status` is `draft`, `stable` or `deprecated`.
 - `generated`: `{ by: process:maintain-wiki, at: <value from the dispatch> }`.
 - `stale_after`: an absolute `YYYY-MM-DD` date, chosen by the topic's volatility as the schema's decay policy says. Omit it only where the schema allows that.
-- `sources[]`: write two sibling entries for each capture. The first has `id: <id>` and `resource: ../<rawDir>/<capture>.md`. The second has `id: <id>-upstream` and the upstream URL as its `resource`. Each entry has a `title`. Keep the existing entries of an updated page and add the new ones.
+- `sources[]`: write two sibling entries for each capture. The first has `id: <id>`, `resource: ../<rawDir>/<capture>.md`, a `title` and `last_modified: <capture date>`. The second has `id: <id>-upstream`, the upstream URL as its `resource`, and a `title`. Keep the existing entries of an updated page and add the new ones. If the dispatch gives no upstream URL for a capture, write nothing for that source and say so in the report.
 - `usage_window`: write it as the schema says, once, as a sibling of `sources`.
-- `verified`: never write it. Your own checking is not human verification. A page reads as unverified until someone verifies it.
+- `verified`: never write it. Your own checking is not human verification. A page reads as unverified until someone verifies it. On an update, leave an existing `verified` key exactly as it is.
 - Do not add a top-level `resource` key to a page.
 - A claim drawn from a source carries a `[^<id>]` footnote in the body and a matching `[^<id>]: <label>` definition. `<id>` is the capture entry's `id`, never the `-upstream` one.
+- End the body with a `## Related` section of links to other pages in `<wikiDir>/`, when the topic connects to any. Write each link in the bundle-absolute form, `[<Title>](/other-page.md)`, as the schema recommends. Omit the section when the topic stands alone.
 
 ## Log rules
 
@@ -76,7 +76,7 @@ Pages follow OKF v0.2. The schema file is the authority on the format. If it dif
 
 ## Writing style
 
-Write plain technical English, inspired by ASD-STE100. This is an inspiration, not compliance with the standard. Use short, direct sentences. Give each thing one name and use that name every time. State one action in each step. Keep every condition, warning and statement of uncertainty. Keep what a source says apart from what you infer. Page format follows OKF v0.2. Project conventions come from `<wikiDir>/schema.md`.
+Write plain technical English, inspired by ASD-STE100. This is an inspiration, not compliance with the standard. Use short, direct sentences. Give each thing one name and use that name every time. State one action in each step. Keep every condition, warning and statement of uncertainty. Keep what a source says apart from what you infer. Page format follows OKF v0.2. Project conventions come from the schema path given in the brief.
 
 ## Output Format
 

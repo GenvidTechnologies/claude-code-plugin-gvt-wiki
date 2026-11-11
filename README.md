@@ -19,7 +19,7 @@ claude plugin marketplace add https://github.com/GenvidTechnologies/claude-code-
 claude plugin install gvt-wiki@gvt-plugins
 ```
 
-The marketplace catalog is `gvt-plugins`.
+The marketplace catalog is `gvt-plugins`. The catalog entry for `gvt-wiki` exists from the `v0.1.0` release on.
 
 ## Configuration
 

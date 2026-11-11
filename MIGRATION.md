@@ -38,7 +38,7 @@ The files under `scripts/` were moved byte-identical. The skill, the templates a
 
 ## Steps for a consuming repository
 
-1. Install `gvt-wiki`:
+1. Install `gvt-wiki`. The catalog entry exists from the `v0.1.0` release on:
 
    ```
    claude plugin marketplace add https://github.com/GenvidTechnologies/claude-code-gvt-marketplace.git

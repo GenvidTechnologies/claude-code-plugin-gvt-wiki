@@ -1,0 +1,4 @@
+node_modules/
+*.log
+plan.md
+plan.*.md

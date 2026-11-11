@@ -1,0 +1,60 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      # Set before checkout so the fixtures keep LF line endings.
+      - name: Keep LF line endings
+        run: git config --global core.autocrlf false
+
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install plugin dependencies
+        run: npm ci --prefix plugin --ignore-scripts --no-audit --no-fund
+
+      - name: Run tests
+        run: |
+          rc=0
+          node --test --test-reporter=tap plugin/skills/maintain-wiki/scripts/test/*.test.mjs plugin/hooks/test/*.test.mjs > "$RUNNER_TEMP/test.tap" 2>&1 || rc=$?
+          cat "$RUNNER_TEMP/test.tap"
+          if [ "$rc" -ne 0 ]; then
+            echo "::error::node --test exited with $rc"
+            exit 1
+          fi
+          # An unmatched glob gives rc=0 and pass 0. A zero pass count is a failure.
+          pass=$(grep -E '^# pass [0-9]+' "$RUNNER_TEMP/test.tap" | awk '{print $3}' | tail -n 1)
+          if [ -z "$pass" ] || [ "$pass" -eq 0 ]; then
+            echo "::error::no test passed (pass count: ${pass:-missing})"
+            exit 1
+          fi
+          echo "tests passed: $pass"
+
+  leak-guard:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Leak grep
+        run: bash .github/scripts/leak-guard.sh

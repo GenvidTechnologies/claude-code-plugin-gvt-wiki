@@ -7,6 +7,8 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.0] - 2026-11-11
+
 ### Added
 
 - The `maintain-wiki` skill, with the verbs `ingest`, `query` and `lint`. Invoke it as `/gvt-wiki:maintain-wiki`. It reads the `wiki` block of the consuming repo's `.gvt-agent.json` (`wiki.wikiDir`, `wiki.rawDir`).

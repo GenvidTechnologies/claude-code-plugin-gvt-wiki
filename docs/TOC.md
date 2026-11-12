@@ -15,3 +15,7 @@ This repo is the `gvt-wiki` plugin itself. Its documentation is the plugin compo
 - [`../plugin/agents/wiki-librarian.md`](../plugin/agents/wiki-librarian.md) - read-only agent for the `query` verb
 - [`../plugin/agents/wiki-editor.md`](../plugin/agents/wiki-editor.md) - write agent for the `ingest` verb; never stages or commits
 - [`../plugin/hooks/hooks.json`](../plugin/hooks/hooks.json) - wiring of the git-state guard (`../plugin/hooks/git-state-guard.mjs`)
+
+## Process
+
+- [`issue-triage.md`](issue-triage.md) - issue triage conventions and mutation recipes read by `/gvt-dev:triage-issues`

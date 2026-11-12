@@ -39,7 +39,12 @@ Decision rule: pick by the worst **observable** impact, not the suspected cause.
 ## Labels
 
 - `type:*` — exactly one (mutually exclusive): `type:bug`, `type:crash`, `type:regression`.
-- `area:*` — one or more subsystem tags (`area:netcode`, `area:ui`, …).
+- `area:*` — one or more subsystem tags:
+  - `area:maintain-wiki` — the `maintain-wiki` skill, its `SKILL.md` and its templates.
+  - `area:wiki-lint` — the `wiki-lint` script and its tests under `scripts/`.
+  - `area:agents` — the `wiki-librarian` and `wiki-editor` agents.
+  - `area:hooks` — the git-state guard hook.
+  - `area:docs-release` — `README.md`, `MIGRATION.md`, `CHANGELOG.md` and releases.
 - `priority/*` — exactly one: `priority/P0` … `priority/P3`.
 - `needs-info` — set when required fields are missing; cleared when supplied.
 - `duplicate` — set on non-canonical members of a duplicate cluster.

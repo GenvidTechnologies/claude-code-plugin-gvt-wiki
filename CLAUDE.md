@@ -19,6 +19,7 @@ plugin/                      # The published plugin (git-subdir source)
   agents/                    # wiki-librarian.md, wiki-editor.md (flat files)
   hooks/                     # hooks.json, git-state-guard.mjs, lib/, test/
 docs/TOC.md                  # Documentation index
+docs/issue-triage.md         # Triage contract read by /gvt-dev:triage-issues
 .gvt-agent.json              # Commands for this repo
 .github/                     # CI workflow and the leak-guard script
 README.md, MIGRATION.md

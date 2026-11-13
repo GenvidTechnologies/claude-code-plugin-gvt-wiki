@@ -98,9 +98,9 @@ fits. A claim drawn from a source carries a footnote keyed to that source's
 MUST NOT reject a bundle for missing optional frontmatter fields, a missing
 optional family (§5.3), unknown `type` values, unknown additional frontmatter
 keys, broken cross-links, or a missing `index.md` — and MUST treat a bare
-`verified` mapping as a one-element list. This bounds what a future mechanical
-linter (`lint`, below, and gvt-dev#150) may flag. The **binding** statement for
-`lint` and gvt-dev#150 lives in the skill body's `lint` section (plugin-owned, so it
+`verified` mapping as a one-element list. This bounds what a linter (`lint`,
+below, and its mechanical checker `wiki-lint.mjs`) may flag. The **binding**
+statement for `lint` and `wiki-lint.mjs` lives in the skill body's `lint` section (plugin-owned, so it
 survives edits to this file); this paragraph is the format's own statement of
 the same clauses.
 

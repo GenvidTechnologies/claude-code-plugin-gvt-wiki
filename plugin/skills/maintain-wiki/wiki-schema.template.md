@@ -56,10 +56,10 @@ fits. A claim drawn from a source carries a footnote keyed to that source's
 ```
 
 - **`type`** — the only always-required key (§4.1); must be non-empty
-  (§11.2). Starter vocabulary shipped here — extend or replace it freely for
-  your project: `practice-note`, `reference`, `decision-context`, `incident`, `convention`.
-  §11 forbids a consumer rejecting an unknown `type` value, so an open-but-recommended
-  set is both routable and conformant.
+  (§11.2). Starter vocabulary shipped here — extend or replace it freely for your project:
+  `practice-note`, `reference`, `decision-context`, `incident`, `convention`, and
+  `decision-record` (an ADR kept in the bundle, superseded rather than rewritten). §11 forbids
+  a consumer rejecting an unknown `type` value, so an open-but-recommended set is both routable and conformant.
 - **`title`, `description`, `tags`** — recommended keys (§4.1). `description`
   is the one-line summary surfaced in `<wikiDir>/index.md` entries and query
   results — keep it accurate and current even when the body grows.

@@ -58,6 +58,7 @@ CI (`.github/workflows/ci.yml`) runs the tests on `ubuntu-latest` and `windows-l
 - Write technical text in short, direct sentences, with one name per component.
 - When you fix a stale issue or ADR reference, search all of `plugin/` for it, not only the file the issue names. The skill templates are copied into consuming repos and often repeat the skill body's claims. Observed 2026-11-13 on #30: the issue named `SKILL.md`, and `wiki-schema.template.md` held the same stale `gvt-dev#150` claim.
 - A template change reaches only wikis scaffolded after the release. An existing `<wikiDir>/schema.md` keeps the old text. When a template fix corrects a wrong claim, say in the `CHANGELOG.md` entry that consumers edit their copy by hand.
+- An issue moved from gvt-dev can name gvt-dev checks that this repo does not have, such as `pointer-baseline.mjs` and the pointer audit. Nothing under `plugin/` points to line numbers in a template (checked with `git grep` on 2026-11-13, #31). You can still keep an edit line-neutral when the issue asks for it, but no check here enforces it.
 
 ## Releasing
 

@@ -7,6 +7,10 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- The wiki schema template's starter `type` vocabulary now lists `decision-record`: an ADR kept in the bundle, superseded rather than rewritten. ADRs that a repo keeps in its wiki already carry this type, and the template did not name it. A `<wikiDir>/schema.md` scaffolded before this release keeps the old list. Add `decision-record` to it by hand if the repo keeps ADRs in the wiki. Template-only change → patch version bump at release (#31).
+
 ### Fixed
 
 - The `maintain-wiki` skill no longer names the closed gvt-dev#150 as the owner of the OKF §11.1–11.2 conformance walk. The `lint` section now says that `wiki-lint.mjs` exists, that it covers only the deterministic subset and does not parse frontmatter, and that #19 tracks the frontmatter check. The `lint` verb still does not check conformance. The wiki schema template no longer calls the mechanical checker "future". A `<wikiDir>/schema.md` scaffolded before this release keeps the old "Tolerated, never rejected" paragraph, and its bare `#150` resolves against the consuming repo's own tracker. Edit that paragraph by hand to match the template. Prose-only skill change, no change to what `lint` or `wiki-lint.mjs` does → patch version bump at release (#30).

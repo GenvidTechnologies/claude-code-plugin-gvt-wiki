@@ -329,26 +329,31 @@ cutoff and is labelled a candidate rather than a "stale" determination.
 
 The schema's **"Tolerated, never rejected"** paragraph is the page
 format's own statement of these same clauses; **this** block is the binding one
-for `lint` and for the mechanical checker (gvt-dev#150).
+for `lint` and for the mechanical checker, `wiki-lint.mjs`.
 
 **Advisory is not rejection.** Reporting an orphan, a dead link, or an
 out-of-bundle link is fully conformant — §11 bounds what a consumer may
 *reject a bundle for*, and `lint` rejects nothing: it never fails, never
 refuses to read a page, never exits non-zero. **This is the bound on the
-mechanical checker (gvt-dev#150):** it may *report* any of the six cases above, but
+mechanical checker (`wiki-lint.mjs`) and on every check added to it:** it may
+*report* any of the six cases above, but
 must never turn one into an error, a hard failure, or a non-zero exit — and if
 it offers an opt-in strict/exit-code mode, a §11-tolerated finding must not be
 what fails it. A consuming repo may hold itself to a stricter *local* policy in
 its own schema doc; that is project policy, never an OKF requirement
 and never a plugin default.
 
-**Boundary with gvt-dev#150 — `lint` does not check §11.1–11.2 conformance.** Whether
-every non-reserved `.md` under `<wikiDir>/` (at any depth, excluding `index.md`
-and `log.md` at any level) carries parseable frontmatter with a non-empty
-`type` is the **mechanical checker's** walk, not this verb's. It is
-deliberately deferred, not forgotten: skill-mode `lint` owns the checks listed
-above; gvt-dev#150 owns the conformance walk and inherits the constraint stated here.
-Neither side should assume the other already does it.
+**Boundary with the mechanical checker — `lint` does not check §11.1–11.2
+conformance.** Whether every non-reserved `.md` under `<wikiDir>/` (at any
+depth, excluding `index.md` and `log.md` at any level) carries parseable
+frontmatter with a non-empty `type` is the **mechanical checker's** walk, not
+this verb's. `wiki-lint.mjs` (shipped by gvt-dev#150) exists and covers only
+the deterministic subset named above. It does not parse frontmatter, so today
+nothing runs the conformance walk. It is deliberately deferred, not forgotten:
+GenvidTechnologies/claude-code-plugin-gvt-wiki#19 tracks adding frontmatter
+parsing to `wiki-lint.mjs`, and that work inherits the constraint stated here.
+Skill-mode `lint` owns the checks listed above. Neither side should assume the
+other already does the conformance walk.
 
 **`lint` is never invoked from gvt-dev's `audit-conventions`.** `audit-conventions`
 is a skill of a separate plugin, gvt-dev. `lint` is a `maintain-wiki` skill verb

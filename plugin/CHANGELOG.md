@@ -7,6 +7,10 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- The `maintain-wiki` skill no longer names the closed gvt-dev#150 as the owner of the OKF §11.1–11.2 conformance walk. The `lint` section now says that `wiki-lint.mjs` exists, that it covers only the deterministic subset and does not parse frontmatter, and that #19 tracks the frontmatter check. The `lint` verb still does not check conformance. The wiki schema template no longer calls the mechanical checker "future". Prose-only skill change, no change to what `lint` or `wiki-lint.mjs` does → patch version bump at release (#30).
+
 ## [0.1.0] - 2026-11-11
 
 ### Added

@@ -45,6 +45,7 @@ Decision rule: pick by the worst **observable** impact, not the suspected cause.
   - `area:agents` — the `wiki-librarian` and `wiki-editor` agents.
   - `area:hooks` — the git-state guard hook.
   - `area:docs-release` — `README.md`, `MIGRATION.md`, `CHANGELOG.md` and releases.
+  - `area:repo-docs` — this repository's own `docs/` or `wiki/` pages and `.gvt-agent.json`.
 - `priority/*` — exactly one: `priority/P0` … `priority/P3`.
 - `needs-info` — set when required fields are missing; cleared when supplied.
 - `duplicate` — set on non-canonical members of a duplicate cluster.

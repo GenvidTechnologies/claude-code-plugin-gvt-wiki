@@ -95,18 +95,18 @@ When a recipe's set would be empty, omit its --remove-label flag.
 
 {otherTypes} is the set of type labels, written out in full, with the label being added removed; {otherPriorities} is the set of priority labels, written out in full, with the label being added removed.
 
-- Set type: `gh issue edit {id} --add-label "type:{type}" --remove-label "{otherTypes}"`
-- Set priority: `gh issue edit {id} --add-label "priority/{p}" --remove-label "{otherPriorities}"`
-- Add area: `gh issue edit {id} --add-label "area:{a}"`
-- Remove area: `gh issue edit {id} --remove-label "area:{a}"`
-- Edit body (language fix / fill missing info): `gh issue edit {id} --body-file {tmpfile}` — the skill writes the approved new body to `{tmpfile}` first
-- Comment: `gh issue comment {id} --body-file {tmpfile}` — the skill writes the comment text to `{tmpfile}` first
-- Flag missing info: `gh issue edit {id} --add-label {needsInfoLabel}` (pair with a Comment saying what's missing)
-- Mark duplicate: `gh issue edit {id} --add-label duplicate` then `gh issue comment {id} --body "Duplicate of #{canonical}"`
-- Close duplicate (only with approval): `gh issue close {id} --reason "not planned" --comment "Duplicate of #{canonical}"`
-- Close as completed or not planned (only with approval): `gh issue close {id} --reason "{closeReason}"` — post the reason first through the Comment recipe; `{closeReason}` is `completed` or `not planned`
-- Create split issue: `gh issue create --title "{title}" --body-file {tmpfile} --label "type:{type},area:{a}"` — the skill writes the drafted split body to `{tmpfile}` first; for a **non-defect** split, replace `type:{type}` with the category label (`enhancement`/`documentation`/`chore`)
-- Link dependency: `gh issue comment {id} --body "Blocked by #{other}"`
-- Stamp triaged: `gh issue edit {id} --add-label {triagedLabel}`
+- Set type: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label "type:{type}" --remove-label "{otherTypes}"`
+- Set priority: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label "priority/{p}" --remove-label "{otherPriorities}"`
+- Add area: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label "area:{a}"`
+- Remove area: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --remove-label "area:{a}"`
+- Edit body (language fix / fill missing info): `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --body-file {tmpfile}` — the skill writes the approved new body to `{tmpfile}` first
+- Comment: `gh issue comment {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --body-file {tmpfile}` — the skill writes the comment text to `{tmpfile}` first
+- Flag missing info: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label {needsInfoLabel}` (pair with a Comment saying what's missing)
+- Mark duplicate: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label duplicate` then `gh issue comment {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --body "Duplicate of #{canonical}"`
+- Close duplicate (only with approval): `gh issue close {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --reason "not planned" --comment "Duplicate of #{canonical}"`
+- Close as completed or not planned (only with approval): `gh issue close {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --reason "{closeReason}"` — post the reason first through the Comment recipe; `{closeReason}` is `completed` or `not planned`
+- Create split issue: `gh issue create --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --title "{title}" --body-file {tmpfile} --label "type:{type},area:{a}"` — the skill writes the drafted split body to `{tmpfile}` first; for a **non-defect** split, replace `type:{type}` with the category label (`enhancement`/`documentation`/`chore`)
+- Link dependency: `gh issue comment {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --body "Blocked by #{other}"`
+- Stamp triaged: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label {triagedLabel}`
 
 Read the labels back after this edit: confirm the issue now carries exactly the intended labels before it is stamped triaged (use the tracker's read-one query, or the native issue view).

@@ -25,7 +25,9 @@ Set the type via the matching `type:*` label; exactly one per issue.
 **Non-defect work** (a feature request, docs change, or chore) is *not* a
 `type:*` — `type:*` is reserved for defects. Classify it by its category label
 instead (`enhancement`, `documentation`, `chore`) and leave `type:*` unset. It
-still gets a `priority/*` and at least one `area:*`.
+may carry more than one category label when both apply, for example
+`documentation` and `chore`. It still gets a `priority/*` and at least one
+`area:*`.
 
 ## Priorities
 

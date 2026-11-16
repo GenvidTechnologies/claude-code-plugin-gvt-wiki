@@ -7,6 +7,8 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-11-16
+
 ### Changed
 
 - The wiki schema template's starter `type` vocabulary now lists `decision-record`: an ADR kept in the bundle, superseded rather than rewritten. ADRs that a repo keeps in its wiki already carry this type, and the template did not name it. A `<wikiDir>/schema.md` scaffolded before this release keeps the old list. Add `decision-record` to it by hand if the repo keeps ADRs in the wiki. Template-only change → patch version bump at release (#31).

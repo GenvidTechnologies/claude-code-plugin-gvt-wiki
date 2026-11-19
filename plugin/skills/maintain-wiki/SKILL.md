@@ -174,15 +174,25 @@ already sitting in `<rawDir>/` — into compounding `<wikiDir>/` content.
    requires every source to be a capture under `<rawDir>/`: a page cites it
    through `sources[]`. So an insight with no capture is saved first as a new
    file under `<rawDir>/`, by this thread. `wiki-editor` never writes under
-   `<rawDir>/`. Note the upstream URL and the capture date (`YYYY-MM-DD`) of
+   `<rawDir>/`. Note the upstream and the capture date (`YYYY-MM-DD`) of
    each source. The editor needs both, and a capture does not record them.
+   The upstream is a stable identifier of the source the capture was taken
+   from, in a form from the schema's `sources[]` rule: a URL for a web page;
+   `git:<owner>/<repo>@<sha>:<path>` for a file in a git repository, at the
+   full SHA of a commit that the default branch contains;
+   `<store>:<scope>/<entry>` for an entry in a local store, such as
+   `memory:<owner>/<repo>/<memory-name>` for auto-memory; `none` for content
+   that exists only in the capture, such as command output or a session
+   insight. A live path such as `docs/setup.md` is not an upstream, because
+   it names whatever is there now. A schema scaffolded before these forms
+   does not list them; use them anyway.
 2. **Resolve the target page** using the create-vs-update rule in
    the schema's (§0 step 1) "Page lifecycle" section: a genuinely new topic
    gets a new page under `<wikiDir>/<topic-slug>.md`; new facts about a topic
    already covered get folded into the existing page in place — never a
    second thin page for the same topic.
 3. **Dispatch `gvt-wiki:wiki-editor`** with the target page path and mode
-   (create or update), the source(s) as capture paths with each upstream URL
+   (create or update), the source(s) as capture paths with each upstream
    and capture date, the resolved `wikiDir`, `rawDir` and schema path, and the
    `generated.at` timestamp. Get the timestamp first: run
    `date -u +%Y-%m-%dT%H:%M:%SZ` on this thread and pass the result in the

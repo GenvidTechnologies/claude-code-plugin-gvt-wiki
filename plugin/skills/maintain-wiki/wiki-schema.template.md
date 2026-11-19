@@ -39,8 +39,8 @@ sources:
     title: <what this source is>
     last_modified: <YYYY-MM-DD>
   - id: <short-id>-upstream
-    resource: <https://original-source-url>
-    title: <the upstream article/source the capture is drawn from>
+    resource: <upstream identifier, in a form from the sources[] rule below>
+    title: <the source the capture was taken from>
 ---
 
 # <Page title>
@@ -81,10 +81,42 @@ fits. A claim drawn from a source carries a footnote keyed to that source's
   the truthful state; inflating it would destroy the trust tier's signal.
 - **`sources[]`** — §5.1. `resource` is **required** within each entry. `id`
   is the join key for per-claim footnotes. Write **two** entries per capture:
-  one citing the immutable capture at `../<rawDir>/<capture>.md`, one citing
-  the upstream URL. The relative path dangles if the bundle is ever extracted
-  on its own, and §6.1's broken-link tolerance covers links, not path-valued
-  fields — the second entry is what keeps provenance resolvable.
+  the capture entry (`id: <id>`), citing the immutable capture at
+  `../<rawDir>/<capture>.md`, and the upstream entry (`id: <id>-upstream`),
+  naming the source the capture was taken from. The capture's relative path
+  dangles if the bundle is ever extracted on its own, and §6.1's broken-link tolerance
+  covers links, not path-valued fields — the upstream entry is what keeps
+  provenance resolvable.
+
+  The upstream entry's `resource` identifies the source **stably**: it still
+  names the same content after the source moves, changes or is deleted. A
+  live path does not qualify, because it names whatever is there now: not
+  `docs/setup.md`, and not a `blob/main/` URL. These forms are conventions,
+  not a closed list. When no form fits, use another `<scheme>:` form that
+  identifies the source the same way.
+
+  - **A web page:** its URL. Prefer a versioned or permalink URL when the
+    host offers one.
+  - **A file in a git repository:** `git:<owner>/<repo>@<sha>:<path>`, with
+    the full commit SHA. A web permalink at the same commit
+    (`https://github.com/<owner>/<repo>/blob/<sha>/<path>`) is an equivalent
+    spelling. Pin a commit that the default branch contains, for example the
+    last commit before the change that moved or deleted the file. A commit
+    that exists only on a branch is not stable: the branch can be deleted,
+    and a squash merge never brings the commit to the default branch.
+  - **An entry in a local, unversioned store**, such as Claude Code's
+    auto-memory: `<store>:<scope>/<entry>`, for example
+    `memory:<owner>/<repo>/<memory-name>`. It names the entry but cannot
+    fetch it later, so the capture is the durable copy.
+  - **Content that exists only in the capture**, such as command output or a
+    session insight: `none`. The `title` says what produced it: the command
+    and the commit it ran at, or the session and its date.
+
+  The `resource` value is an **identifier to look the source up by, not
+  prose**. Build it from the form with real values, and put the description
+  in `title`. A paraphrase such as
+  `memory:acme/app/the notes about the staging deploy` looks well-formed and
+  resolves to nothing.
 - **`usage_window`** — §5.1, written once as a sibling of `sources`, framing
   every `usage_count` in the page.
 - **Per-claim footnotes** (§5.1) — a claim carries `[^<id>]` in the body and a

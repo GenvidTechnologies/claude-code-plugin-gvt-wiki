@@ -29,7 +29,7 @@ You change files with `Write` and `Edit` only. You have no shell. You do not sta
 
 The dispatch prompt gives you:
 
-- **The sources** to ingest. Each source is a capture file under `<rawDir>/`. The dispatch gives, for each capture, its upstream URL and its capture date (`YYYY-MM-DD`). A source with no capture file is not ingested; the caller saves it as a capture first.
+- **The sources** to ingest. Each source is a capture file under `<rawDir>/`. The dispatch gives, for each capture, its upstream and its capture date (`YYYY-MM-DD`). The upstream identifies the source the capture was taken from: a URL, a `git:<owner>/<repo>@<sha>:<path>` pin, a local-store identifier such as `memory:<owner>/<repo>/<memory-name>`, or `none` for content that exists only in the capture. A source with no capture file is not ingested; the caller saves it as a capture first.
 - **The `wiki` block** from `.gvt-agent.json`: `wikiDir` (default `wiki`) and `rawDir` (default `raw`). Use the defaults when the block or a key is absent.
 - **The schema path**, as the dispatch gives it.
 - **The `generated.at` value**: an ISO timestamp (`YYYY-MM-DDTHH:MM:SSZ`). Copy it into each page you write. Do not compute it yourself. Its date part is today's date, for the log heading and for `stale_after`.
@@ -53,7 +53,7 @@ Pages follow OKF v0.2. The schema file is the authority on the format. If it dif
 - `title`, `description`, `tags`, `status`: write all four. `status` is `draft`, `stable` or `deprecated`.
 - `generated`: `{ by: process:maintain-wiki, at: <value from the dispatch> }`.
 - `stale_after`: an absolute `YYYY-MM-DD` date, chosen by the topic's volatility as the schema's decay policy says. Omit it only where the schema allows that.
-- `sources[]`: write two sibling entries for each capture. The first has `id: <id>`, `resource: ../<rawDir>/<capture>.md`, a `title` and `last_modified: <capture date>`. The second has `id: <id>-upstream`, the upstream URL as its `resource`, and a `title`. Keep the existing entries of an updated page and add the new ones. If the dispatch gives no upstream URL for a capture, write nothing for that source and say so in the report.
+- `sources[]`: write two sibling entries for each capture. The first has `id: <id>`, `resource: ../<rawDir>/<capture>.md`, a `title` and `last_modified: <capture date>`. The second has `id: <id>-upstream`, the upstream from the dispatch as its `resource`, and a `title` that describes the source. Copy the upstream exactly. It is an identifier, not prose: never paraphrase it or put a description in it. When the upstream is `none`, the `title` says what produced the content. Keep the existing entries of an updated page and add the new ones. If the dispatch gives no upstream for a capture, or gives a live path with no commit pinned or a description instead of an identifier, write nothing for that source and say so in the report.
 - `usage_window`: write it as the schema says, once, as a sibling of `sources`.
 - `verified`: never write it. Your own checking is not human verification. A page reads as unverified until someone verifies it. On an update, leave an existing `verified` key exactly as it is.
 - Do not add a top-level `resource` key to a page.

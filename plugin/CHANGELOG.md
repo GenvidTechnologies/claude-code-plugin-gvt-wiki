@@ -7,6 +7,8 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-11-20
+
 ### Changed
 
 - A page source no longer needs an upstream URL. The wiki schema template's `sources[]` rule keeps two entries per capture, the capture entry and the `<id>-upstream` entry, and now says what the upstream entry must be: a stable identifier of the source the capture was taken from, never a live path and never prose. It lists conventional forms: a URL for a web page, `git:<owner>/<repo>@<sha>:<path>` (or a permalink at that commit) for a file in a git repository, pinned to a commit the default branch contains, `<store>:<scope>/<entry>` for a local store such as auto-memory, and `none` for content that exists only in the capture, such as command output or a session insight. The template's frontmatter example no longer shows a URL placeholder. `maintain-wiki` ingest step 1 passes the upstream in one of these forms, `wiki-editor` writes it as given instead of skipping a source with no URL, and `wiki-librarian` reads every form. A `<wikiDir>/schema.md` scaffolded before this release keeps the URL-only rule. Replace its `sources[]` bullet and example by hand to match the template. `wiki-editor` now ingests sources it used to skip → minor version bump at release (#13).

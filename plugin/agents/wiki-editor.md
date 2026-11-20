@@ -39,7 +39,7 @@ The dispatch prompt gives you:
 1. **Read the schema first.** Read the whole schema file. Its "Page lifecycle: create vs. update" section decides whether a source needs a new page or an update to an existing page. Its "Decay / staleness policy" section decides `stale_after`.
 2. **Read the sources.** Read each capture. Read `<wikiDir>/index.md` and the existing pages that may cover the same topic.
 3. **Decide create or update** for each source, by the schema's page lifecycle. When it is not clear, update the closer existing page.
-4. **Write the page.** For a new page, write `<wikiDir>/<topic-slug>.md`. For an existing page, use `Edit` and integrate the new facts into the prose. Do not append raw paragraphs. Update `description` if the shape of the topic changed.
+4. **Write the page.** For a new page, write `<wikiDir>/<topic-slug>.md`. For an existing page, use `Edit` and integrate the new facts into the prose. Do not append raw paragraphs. Update `description` if the shape of the topic changed. Cite each new or changed claim as "Citing a changed source" below says.
 5. **Write the frontmatter** as the next section says.
 6. **Add the index entry** for a new page. Mirror the shape of the entries already in `<wikiDir>/index.md`. Use the page's frontmatter `description` as the entry text. Put the entry under the fitting section heading. When the index has no entry yet, use `* [<Title>](<page>.md) - <description>`. An update to an existing page needs no new entry. Edit the entry only if the `description` changed.
 7. **Add one log entry for each source** to `<wikiDir>/log.md`, as the log rules below say.
@@ -53,12 +53,20 @@ Pages follow OKF v0.2. The schema file is the authority on the format. If it dif
 - `title`, `description`, `tags`, `status`: write all four. `status` is `draft`, `stable` or `deprecated`.
 - `generated`: `{ by: process:maintain-wiki, at: <value from the dispatch> }`.
 - `stale_after`: an absolute `YYYY-MM-DD` date, chosen by the topic's volatility as the schema's decay policy says. Omit it only where the schema allows that.
-- `sources[]`: write two sibling entries for each capture. The first has `id: <id>`, `resource: ../<rawDir>/<capture>.md`, a `title` and `last_modified: <capture date>`. The second has `id: <id>-upstream`, the upstream from the dispatch as its `resource`, and a `title` that describes the source. Copy the upstream exactly. It is an identifier, not prose: never paraphrase it or put a description in it. When the upstream is `none`, the `title` says what produced the content. Keep the existing entries of an updated page and add the new ones. If the dispatch gives no upstream for a capture, or gives a live path with no commit pinned or a description instead of an identifier, write nothing for that source and say so in the report.
+- `sources[]`: write two sibling entries for each capture. The first has `id: <id>`, `resource: ../<rawDir>/<capture>.md`, a `title` and `last_modified: <capture date>`. The second has `id: <id>-upstream`, the upstream from the dispatch as its `resource`, and a `title` that describes the source. Copy the upstream exactly. It is an identifier, not prose: never paraphrase it or put a description in it. When the upstream is `none`, the `title` says what produced the content. Keep the existing entries of an updated page and add the new ones. Never point an existing entry at a new capture or a new commit ("Citing a changed source" below gives the reason). If the dispatch gives no upstream for a capture, or gives a live path with no commit pinned or a description instead of an identifier, write nothing for that source and say so in the report.
 - `usage_window`: write it as the schema says, once, as a sibling of `sources`.
 - `verified`: never write it. Your own checking is not human verification. A page reads as unverified until someone verifies it. On an update, leave an existing `verified` key exactly as it is.
 - Do not add a top-level `resource` key to a page.
 - A claim drawn from a source carries a `[^<id>]` footnote in the body and a matching `[^<id>]: <label>` definition. `<id>` is the capture entry's `id`, never the `-upstream` one.
 - End the body with a `## Related` section of links to other pages in `<wikiDir>/`, when the topic connects to any. Write each link in the bundle-absolute form, `[<Title>](/other-page.md)`, as the schema recommends. Omit the section when the topic stands alone.
+
+## Citing a changed source
+
+These rules apply on every update, whether or not the schema states them. A schema scaffolded before them does not.
+
+- A claim that you add or change because a source changed (the code, a document, a setting) cites a `sources[]` entry whose source shows that change: a capture taken after the change, or a commit that contains the change. When the capture's upstream is a `git:` pin, the pin names such a commit too. Use the entry of the new capture, not an existing entry.
+- Add a new `sources[]` entry for that source. Do not point an existing entry at the new capture or the new commit. The existing entry still supports the claims it was first read for, and those claims can describe what the change removed. Moved to the new source, the entry would cite them to a source that no longer shows them.
+- Before you put an existing footnote on a new or changed sentence, read the entry's source and confirm that it shows what the sentence says. If it does not, cite a source that does. If no source does, leave the claim out and say so in the report.
 
 ## Log rules
 

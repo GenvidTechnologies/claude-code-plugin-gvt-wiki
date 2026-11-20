@@ -185,7 +185,11 @@ already sitting in `<rawDir>/` — into compounding `<wikiDir>/` content.
    that exists only in the capture, such as command output or a session
    insight. A live path such as `docs/setup.md` is not an upstream, because
    it names whatever is there now. A schema scaffolded before these forms
-   does not list them; use them anyway.
+   does not list them; use them anyway. When a source changed since a page
+   cited it, capture it again after the change, as a new file, and pin a
+   `git:` upstream at a commit that contains the change. The editor cites
+   the claims about the change to that new capture, and leaves the existing
+   entries as they are.
 2. **Resolve the target page** using the create-vs-update rule in
    the schema's (§0 step 1) "Page lifecycle" section: a genuinely new topic
    gets a new page under `<wikiDir>/<topic-slug>.md`; new facts about a topic

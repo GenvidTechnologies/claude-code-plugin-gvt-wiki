@@ -18,9 +18,13 @@ plugin/                      # The published plugin (git-subdir source)
   skills/maintain-wiki/      # SKILL.md, four templates, scripts/ (wiki-lint and its tests)
   agents/                    # wiki-librarian.md, wiki-editor.md (flat files)
   hooks/                     # hooks.json, git-state-guard.mjs, lib/, test/
-docs/TOC.md                  # Documentation index
-docs/issue-triage.md         # Triage contract read by /gvt-dev:triage-issues
-.gvt-agent.json              # Commands for this repo
+wiki/                        # This repo's own docs, in the maintain-wiki format
+  index.md                   # Documentation index
+  log.md                     # Change log of the page set
+  schema.md                  # Maintenance rules for this wiki
+  issue-triage.md            # Triage contract read by /gvt-dev:triage-issues
+raw/                         # Immutable captures for ingest (README.md only so far)
+.gvt-agent.json              # Commands for this repo, and the wiki block
 .github/                     # CI workflow and the leak-guard script
 README.md, MIGRATION.md
 ```

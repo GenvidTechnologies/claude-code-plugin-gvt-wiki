@@ -17,6 +17,10 @@
   "paths": {
     "plugin_root": "plugin"
   },
+  "wiki": {
+    "wikiDir": "wiki",
+    "rawDir": "raw"
+  },
   "bugTracker": {
     "kind": "github",
     "actionQuery": "gh issue list --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --state open -L 500 --json number,title,labels,body,assignees,author,createdAt,milestone",

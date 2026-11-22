@@ -11,7 +11,7 @@ metadata:
         reason: The wiki's maintenance-rules schema (page format, create-vs-update lifecycle, raw/ immutability, staleness policy via stale_after, verb contract), resolved as the paths override for this key, else <wikiDir>/schema.md inside the bundle, else the legacy docs/wiki-schema.md; the skill offers to scaffold it, at the override path when one is set and else at <wikiDir>/schema.md, when none of the three exists
       - path: docs/TOC.md
         required: false
-        reason: The §0 scaffold step adds a one-line index entry for a schema scaffolded outside the wiki bundle (a paths override naming a location such as docs/) when docs/TOC.md is present
+        reason: The documentation index (the file that gvt-dev's CONVENTIONS.md "Runtime path resolution" resolves for docs/TOC.md, which is paths['docs/TOC.md'] when set, else <wikiDir>/index.md). For a schema scaffolded outside the wiki bundle (a paths override naming a location such as docs/), the §0 scaffold step adds a one-line Knowledge Base entry to that index when the index is present and outside <wikiDir>/; when the index is inside <wikiDir>/, the step writes no entry and reports the mismatch
     config:
       - key: wiki.wikiDir
         in: .gvt-agent.json
@@ -83,8 +83,8 @@ first use.
    decides whether a missing layout is something to *create* or merely something
    to *report*.
 3. **Confirm mode:** interactive by default. `--non-interactive` (alias
-   `--auto`) runs unattended, applying the scaffold and TOC index automatically
-   per the rules below. That automatic application is precisely why the verb is
+   `--auto`) runs unattended, applying the scaffold and the index entry
+   automatically per the rules below. That automatic application is precisely why the verb is
    resolved first — an unattended `query` or `lint` must never create a wiki.
 4. **Probe for the three-tier layout:**
    - `<wikiDir>/` and `<rawDir>/` directories
@@ -146,17 +146,37 @@ first use.
    scaffolded wiki (e.g. `<wikiDir>/` exists but no schema doc does) is normal.
 
    **Index the scaffolded schema doc in the index that owns its location.**
-   - **Inside `<wikiDir>/`** (the default): add a one-line entry linking it
-     from `<wikiDir>/index.md` under a **Schema** heading (create the heading
-     if absent), mirroring that index's existing entry shape, with the
-     frontmatter `description` as the entry text. An unlisted bundle page is
-     an orphan to `lint`. No `docs/TOC.md` row: the bundle's own index is its
-     discovery surface.
-   - **Outside the bundle** (an override naming, say, a `docs/` location): add the entry
-     to `docs/TOC.md` under a **Knowledge Base** heading (create the heading if
-     absent), mirroring that index's existing entry shape.
+   First resolve the **documentation index**: the file that "Runtime path
+   resolution" in
+   [gvt-dev's `CONVENTIONS.md`](https://github.com/GenvidTechnologies/claude-code-plugin-gvt-dev/blob/main/plugin/CONVENTIONS.md)
+   resolves for `docs/TOC.md`. That is `paths['docs/TOC.md']` in
+   `.gvt-agent.json` when the override is set, else `<wikiDir>/index.md`.
+   The override wins outright. Resolution does not check whether the file
+   exists. The index is **inside `<wikiDir>/`** when its resolved path lies
+   under `<wikiDir>/`, at any depth.
+   - **Schema inside `<wikiDir>/`** (the default): add a one-line entry
+     linking it from `<wikiDir>/index.md` under a **Schema** heading (create
+     the heading if absent), mirroring that index's existing entry shape,
+     with the frontmatter `description` as the entry text. An unlisted bundle
+     page is an orphan to `lint`. A documentation index outside the bundle
+     gets no entry: the bundle's own index is its discovery surface.
+   - **Schema outside the bundle, documentation index outside `<wikiDir>/`**
+     (an override naming, say, a `docs/` location for each): add the entry to
+     the documentation index under a **Knowledge Base** heading (create the
+     heading if absent), mirroring that index's existing entry shape.
+   - **Schema outside the bundle, documentation index inside `<wikiDir>/`**
+     (the case with no `paths['docs/TOC.md']` override): write no entry. A
+     link from a wiki index to a file outside the bundle is an out-of-bundle
+     link, which `lint` reports. Report instead that the schema sits outside
+     the wiki bundle while the documentation index is inside it. Suggest one
+     of two remedies: move the schema into the bundle (to
+     `<wikiDir>/schema.md`, and drop the `paths['docs/wiki-schema.md']`
+     override), or set `paths['docs/TOC.md']` to an index outside the bundle.
+     Make no change to either file. This report is given under
+     `--non-interactive` too, in the run's output.
 
-   Interactively, **offer** it; in `--non-interactive`, add it **automatically**.
+   When an entry is due, interactively **offer** it; in `--non-interactive`,
+   add it **automatically**.
    Make it **idempotent** (skip when a link in that index already resolves to
    the schema) and **skip gracefully if the index file is absent** — the doc
    still exists and works, it's just undiscoverable through the index.

@@ -7,6 +7,10 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Changed
+
+- The `maintain-wiki` §0 scaffold step now finds the documentation index through "Runtime path resolution" in gvt-dev's `CONVENTIONS.md`: `paths['docs/TOC.md']` when that override is set, else `<wikiDir>/index.md`, the default since gvt-dev 6.0.0 (gvt-dev ADR-0101). It no longer writes to a literal `docs/TOC.md`, and the `docs/TOC.md` expectation's reason names the resolved index. A schema inside the bundle is indexed in `<wikiDir>/index.md`, as before. For a schema outside the bundle, the step adds the **Knowledge Base** entry only when the documentation index is also outside `<wikiDir>/`. When the index is inside `<wikiDir>/`, the step writes no entry, because the link would leave the bundle, and reports the mismatch with two remedies: move the schema into the bundle, or set `paths['docs/TOC.md']`. A repository that kept its schema outside the bundle with no `paths['docs/TOC.md']` override no longer gets an entry in `docs/TOC.md` → minor version bump at release (#60).
+
 ## [0.2.0] - 2026-11-20
 
 ### Changed

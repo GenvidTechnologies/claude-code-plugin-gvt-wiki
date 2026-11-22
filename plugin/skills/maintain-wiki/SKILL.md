@@ -16,11 +16,11 @@ metadata:
       - key: wiki.wikiDir
         in: .gvt-agent.json
         required: false
-        reason: The directory holding the wiki's pages, index, and log (defaults to wiki)
+        reason: The directory holding the wiki's pages, index, and log (defaults to wiki); ingest's §0 scaffold step writes the wiki block with this key when .gvt-agent.json exists and has no wiki block
       - key: wiki.rawDir
         in: .gvt-agent.json
         required: false
-        reason: The directory holding immutable source captures cited for provenance (defaults to raw)
+        reason: The directory holding immutable source captures cited for provenance (defaults to raw); ingest's §0 scaffold step writes the wiki block with this key when .gvt-agent.json exists and has no wiki block
     tools:
       - command: git
         required: false
@@ -83,8 +83,8 @@ first use.
    decides whether a missing layout is something to *create* or merely something
    to *report*.
 3. **Confirm mode:** interactive by default. `--non-interactive` (alias
-   `--auto`) runs unattended, applying the scaffold and the index entry
-   automatically per the rules below. That automatic application is precisely why the verb is
+   `--auto`) runs unattended, applying the scaffold, the index entry and the
+   `wiki` block automatically per the rules below. That automatic application is precisely why the verb is
    resolved first — an unattended `query` or `lint` must never create a wiki.
 4. **Probe for the three-tier layout:**
    - `<wikiDir>/` and `<rawDir>/` directories
@@ -141,9 +141,9 @@ first use.
    Interactively, **offer** the scaffold (`AskUserQuestion`); in
    `--non-interactive`, scaffold **automatically**. **This step is idempotent**:
    re-running it only creates the pieces that are still missing — a directory,
-   file, or index entry already present is left untouched and skipped silently
-   (a shadowed schema duplicate is still reported, as step 4 says). A partly
-   scaffolded wiki (e.g. `<wikiDir>/` exists but no schema doc does) is normal.
+   file, index entry or `wiki` block already present is left untouched and
+   skipped silently (a shadowed schema duplicate is still reported, as step 4
+   says). A partly scaffolded wiki (e.g. `<wikiDir>/` exists but no schema doc does) is normal.
 
    **Index the scaffolded schema doc in the index that owns its location.**
    First resolve the **documentation index**: the file that "Runtime path
@@ -180,6 +180,34 @@ first use.
    Make it **idempotent** (skip when a link in that index already resolves to
    the schema) and **skip gracefully if the index file is absent** — the doc
    still exists and works, it's just undiscoverable through the index.
+
+   **Write the `wiki` block to `.gvt-agent.json`.** This skill reads the block
+   with defaults, so the wiki works without it. gvt-dev's `audit-conventions`
+   counts the block's *presence* as one of its wiki adoption signals. Without
+   the block, a repo with every wiki file in place stays at `partial adoption`.
+   When `.gvt-agent.json` has no top-level `wiki` key, add one with the values
+   step 1 used, which are the defaults when the key is absent:
+
+   ```json
+   "wiki": { "wikiDir": "wiki", "rawDir": "raw" }
+   ```
+
+   - **Skip silently when a `wiki` key exists**, whatever it holds. Never
+     change, complete or reformat a block that the repo already has.
+   - **Skip gracefully when `.gvt-agent.json` is absent.** Do not create the
+     file. The wiki works with the defaults; only the audit's adoption verdict
+     is affected.
+   - **Do not write when `.gvt-agent.json` does not parse as JSON.** Report
+     it, and go on with the ingest.
+   - **Change nothing else in the file.** Keep the other keys and their
+     order, the indentation, the line endings and the final newline.
+   - **Run this action on every `ingest` that finds the key missing**, also
+     when the wiki files all exist. A wiki scaffolded before this action gets
+     the block on its next `ingest`.
+
+   Interactively, **offer** it; in `--non-interactive`, add it **automatically**.
+   Like the rest of the scaffold, it runs under `ingest` only: `query` and
+   `lint` never write `.gvt-agent.json`.
 
 ## `ingest`
 

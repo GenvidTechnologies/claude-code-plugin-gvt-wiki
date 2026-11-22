@@ -7,6 +7,10 @@ and follows [semantic versioning](https://semver.org/).
 
 ## [Unreleased]
 
+### Fixed
+
+- `maintain-wiki` ingest now writes the `wiki` block to `.gvt-agent.json`. gvt-dev's `audit-conventions` counts the block's presence as one of its wiki adoption signals, and the scaffold never wrote it, so a wiki set up exactly as the skill instructs stayed at `partial adoption`. The §0 scaffold step now adds `"wiki": { "wikiDir": "wiki", "rawDir": "raw" }` when `.gvt-agent.json` has no `wiki` key. It offers the write interactively and applies it under `--non-interactive`. It never changes a `wiki` block that exists, never creates `.gvt-agent.json`, and does not write a file that does not parse as JSON. Only `ingest` writes it; `query` and `lint` never do. A wiki scaffolded before this release gets the block on its next `ingest`, with no hand edit → patch version bump at release (#10).
+
 ## [0.2.0] - 2026-11-20
 
 ### Changed

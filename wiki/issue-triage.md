@@ -63,6 +63,21 @@ Decision rule: pick by the worst **observable** impact, not the suspected cause.
 
 The triager sets `type:*`, `area:*`, and `priority/*`. Reporters may set `area:*`.
 
+The road block is not a label. It is the `Road block` field of the GitHub
+project GenvidTechnologies/1: one option per larger goal of the project, plus
+`Standalone` for a bug or small improvement that serves no larger goal. Each
+option's description gives the goal and its "done when". Propose a road block
+for each triaged issue, and set it only with the coach's approval, through the
+recipe "Set road block". When no road block fits and the issue is not
+standalone, say so in the triage report: the project may need a new goal.
+
+Read the options and the issue's current road block first, with the recipe
+"Read road block". Report the current value beside the proposal. When they are
+the same, say "no change" and do not ask or write. "Set road block" has no dry
+run, so it cannot be used to look. Observed in the triage of #66 and #67
+(2026-11-21): both issues already held the road block that the triage would
+have proposed, and this file had no recipe to read it.
+
 ## Required fields
 
 Every triaged **bug** must have: a reproduction (steps or a failing case),
@@ -118,6 +133,8 @@ When a recipe's set would be empty, omit its --remove-label flag.
 - Close as completed or not planned (only with approval): `gh issue close {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --reason "{closeReason}"` — post the reason first through the Comment recipe; `{closeReason}` is `completed` or `not planned`
 - Create split issue: `gh issue create --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --title "{title}" --body-file {tmpfile} --label "type:{type},area:{a}"` — the skill writes the drafted split body to `{tmpfile}` first; for a **non-defect** split, replace `type:{type}` with the category label (`enhancement`/`documentation`/`chore`)
 - Link dependency: `gh issue comment {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --body "Blocked by #{other}"`
+- Read road block (read-only): `gh api graphql -F n={id} -f query='query($n:Int!){organization(login:"GenvidTechnologies"){projectV2(number:1){field(name:"Road block"){... on ProjectV2SingleSelectField{options{name description}}}}} repository(owner:"GenvidTechnologies",name:"claude-code-plugin-gvt-wiki"){issue(number:$n){projectItems(first:20){nodes{project{number} roadBlock:fieldValueByName(name:"Road block"){... on ProjectV2ItemFieldSingleSelectValue{name}}}}}}}'` — prints every option of the `Road block` field with its description, and the issue's project items with their `Road block` value. Use the item of project number 1. No item of project 1 means the issue is not in the project; a `null` value means the field is not set. The query reads the issue's `projectItems`, which lists only projects of the repository's owner; project 1 is one of them. Run 2026-11-21 on #66: 32 options, and the item of project 1 with its road block.
+- Set road block (only with the coach's approval): `node <gvt-fleet workspace>/.claude/skills/groom-road-blocks/scripts/set.mjs --dir <scratch folder> --project GenvidTechnologies/1 "GenvidTechnologies/claude-code-plugin-gvt-wiki#{id}={roadBlock}"`, where `<gvt-fleet workspace>` is the absolute path of the gvt-fleet workspace root. `{roadBlock}` is the full option name, for example `G3 maintain-wiki and wiki-lint are trustworthy`. The script has no dry run: it writes at once. It creates the `--dir` folder for its query files, adds the issue to the project when it is missing, reads the value back, and prints `OK` for each issue.
 - Stamp triaged: `gh issue edit {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --add-label {triagedLabel}`
 
 Read the labels back after this edit: confirm the issue now carries exactly the intended labels before it is stamped triaged (use the tracker's read-one query, or the native issue view).

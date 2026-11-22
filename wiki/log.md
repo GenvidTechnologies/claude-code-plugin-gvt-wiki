@@ -9,6 +9,10 @@ Add newest first. Never edit or remove a prior entry. If a past entry needs a
 correction, add a new entry that says so. The maintenance rules are in
 [the schema](schema.md).
 
+## 2026-11-22
+
+* **Update**: `issue-triage.md` gains a rule under Types: an issue that asks to change what the code documents about itself is non-defect work, even when its title reads like a defect. From the retro of the triage of #77, whose title read like a defect while `wiki-lint.mjs` did what its header said.
+
 ## 2026-11-21
 
 * **Update**: `issue-triage.md` gains the road-block rule (under Labels) and the recipes "Read road block" and "Set road block", from the retro of the triage of #66 and #67. The triage had to read the `Road block` field of project GenvidTechnologies/1 with an ad-hoc query, because this file named neither the field nor a recipe.

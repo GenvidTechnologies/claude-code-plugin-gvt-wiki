@@ -37,6 +37,12 @@ may carry more than one category label when both apply, for example
 `documentation` and `chore`. It still gets a `priority/*` and at least one
 `area:*`.
 
+An issue that asks to change what the code documents about itself is non-defect
+work, even when its title reads like a defect. Read the code's own header and
+the docs first. A wrong output found along the way goes into the body, and does
+not decide the type. Observed 2026-11-22 on #77: the script did what its header
+said ("No flags", "always exits 0"), so the issue is an `enhancement`.
+
 ## Priorities
 
 - `P0` — blocks release or breaks the build; fix now.

@@ -1,6 +1,6 @@
 {
   "name": "gvt-wiki",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Maintain a project wiki in the OKF format: the maintain-wiki skill, its wiki-lint script, and the hooks that keep the wiki consistent.",
   "author": {
     "name": "Genvid"

@@ -45,6 +45,8 @@ bash .github/scripts/leak-guard.sh && npm ci --prefix plugin --ignore-scripts --
 
 In a worktree-isolated session, the worktree guard refuses the `validate` line as one command: a chain that names `.github` reads to it as a git command too complex to verify. Write the four steps to a script file in the job's temporary folder, one step per line, with its own output file and its own `echo "<step> rc=$?"`. Then run that script as `bash <absolute path>`. Observed 2026-11-22 on #60.
 
+The same guard refuses a command that names a path with `git` in it, such as `plugin/hooks/git-state-guard.mjs` and its `lib/` and `test/` copies, or a path under `.github/`, when the path is in a loop or a chain. A `diff` loop over the guard files and a `cat -n` over several files that included `.github/` were both refused. Read such a file with the Read tool, or put the commands in a script in the job's temporary folder and run it as `bash <absolute path>`. Observed 2026-11-25 in a refactoring audit.
+
 CI (`.github/workflows/ci.yml`) runs the tests on `ubuntu-latest` and `windows-latest` with Node 22, and runs a leak-guard job.
 
 ## Test conventions

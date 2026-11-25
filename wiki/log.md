@@ -9,6 +9,10 @@ Add newest first. Never edit or remove a prior entry. If a past entry needs a
 correction, add a new entry that says so. The maintenance rules are in
 [the schema](schema.md).
 
+## 2026-11-25
+
+* **Update**: `issue-triage.md` gains the recipe "Create issue", for an issue filed from an audit or a retro: the category label and `area:*` only, then a read-back of the body and labels. From the retro of the refactoring audit that filed #82 to #86, where the file had a recipe for a split issue only.
+
 ## 2026-11-22
 
 * **Update**: `issue-triage.md` gains a rule under Types: an issue that asks to change what the code documents about itself is non-defect work, even when its title reads like a defect. From the retro of the triage of #77, whose title read like a defect while `wiki-lint.mjs` did what its header said.

@@ -52,6 +52,7 @@ CI (`.github/workflows/ci.yml`) runs the tests on `ubuntu-latest` and `windows-l
 ## Test conventions
 
 - Tests use `node:test`.
+- Both test globs (`plugin/skills/maintain-wiki/scripts/test/` and `plugin/hooks/test/`) are inside the published plugin, so a test placed there ships to consumers. A test of this repository's own rules goes outside `plugin/`, and its glob goes into `commands.test`, `commands.validate` and the CI test step. Observed 2026-11-25 in the triage of #86.
 - Pass a glob to `node --test`. Never pass a directory: Node tries to load the directory as a module and reports one failed test.
 - An unmatched glob gives rc=0 and `# pass 0`. A zero pass count is not a pass. Read the count.
 - On Windows, set `core.autocrlf false` before checkout. Otherwise CRLF line endings can change fixtures.

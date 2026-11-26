@@ -11,6 +11,7 @@ correction, add a new entry that says so. The maintenance rules are in
 
 ## 2026-11-25
 
+* **Update**: `issue-triage.md`, from the retro of the triage of #82 to #86. Required fields gains a rule: check each acceptance criterion against `main`, and exclude `plugin/CHANGELOG.md` from a grep criterion over `plugin/`. `area:repo-docs` now covers this repository's own files outside `plugin/`, CI and repository tests included. Dependencies gains a rule for a comment in another repository's tracker: write each issue in full, and check the draft with that tracker as `--repo`. The "Create issue" recipe says that a new issue has no project item. The triage found a criterion that passed before its change (#83), two grep criteria that their own changelog entry could fail (#82, #83), no area for the CI and tests of #86, no project item on any of the five issues, and a bare `#89` in the draft of a comment for GenvidTechnologies/claude-code-plugin-gvt-dev#1115.
 * **Update**: `issue-triage.md` gains the recipe "Create issue", for an issue filed from an audit or a retro: the category label and `area:*` only, then a read-back of the body and labels. From the retro of the refactoring audit that filed #82 to #86, where the file had a recipe for a split issue only.
 
 ## 2026-11-22

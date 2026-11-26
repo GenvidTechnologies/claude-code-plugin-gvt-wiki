@@ -61,7 +61,7 @@ Decision rule: pick by the worst **observable** impact, not the suspected cause.
   - `area:agents` — the `wiki-librarian` and `wiki-editor` agents.
   - `area:hooks` — the git-state guard hook.
   - `area:docs-release` — `README.md`, `MIGRATION.md`, `CHANGELOG.md` and releases.
-  - `area:repo-docs` — this repository's own `wiki/` pages and `.gvt-agent.json`.
+  - `area:repo-docs` — this repository's own files outside `plugin/`: `wiki/` pages, `CLAUDE.md`, `.gvt-agent.json`, CI (`.github/`) and repository tests.
 - `priority/*` — exactly one: `priority/P0` … `priority/P3`.
 - `needs-info` — set when required fields are missing; cleared when supplied.
 - `duplicate` — set on non-canonical members of a duplicate cluster.
@@ -95,6 +95,15 @@ it instead needs a clear **proposed change** (or acceptance criteria, as `- [ ]`
 one `area:*` label. Never `needs-info` an enhancement for lacking a repro — flag
 it only when the proposed change itself is too vague to act on.
 
+Check each acceptance criterion against `main` before you stamp the issue. A
+criterion that already passes cannot show the change: rewrite it so that it
+fails before the change. A grep criterion over `plugin/` also reads
+`plugin/CHANGELOG.md`, and the `[Unreleased]` entry that the same criteria ask
+for can name the string that the grep must not find: add
+`--exclude=CHANGELOG.md`. Observed 2026-11-25 in the triage of #82 to #86: a
+criterion of #83 passed before the change, and #82 and #83 each had a grep
+criterion that their own changelog entry could fail.
+
 ## Splitting
 
 Split when one issue bundles unrelated defects, or when a single defect spans
@@ -115,6 +124,14 @@ with explicit per-item approval.
 Express a dependency with a comment on the blocked issue: `Blocked by #<id>`
 (optionally `Blocks #<id>` on the other). For umbrellas, list dependencies as a
 GitHub task-list under a `Depends on` heading.
+
+A comment in another repository's tracker writes each issue of this repository
+in full, as `GenvidTechnologies/claude-code-plugin-gvt-wiki#<id>`. Check the
+draft with the reference grammar of `/gvt-dev:triage-issues`
+(`issue-refs.mjs extract`), with that tracker's repository as `--repo`: a bare
+`#<id>` reads as that tracker's own issue. Observed 2026-11-25: the comment
+that linked #89 from GenvidTechnologies/claude-code-plugin-gvt-dev#1115 held a
+bare `#89`, which the check read as gvt-dev's #89 before the comment was posted.
 
 ## Mutation recipes
 
@@ -138,7 +155,7 @@ When a recipe's set would be empty, omit its --remove-label flag.
 - Close duplicate (only with approval): `gh issue close {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --reason "not planned" --comment "Duplicate of #{canonical}"`
 - Close as completed or not planned (only with approval): `gh issue close {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --reason "{closeReason}"` — post the reason first through the Comment recipe; `{closeReason}` is `completed` or `not planned`
 - Create split issue: `gh issue create --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --title "{title}" --body-file {tmpfile} --label "type:{type},area:{a}"` — the skill writes the drafted split body to `{tmpfile}` first; for a **non-defect** split, replace `type:{type}` with the category label (`enhancement`/`documentation`/`chore`)
-- Create issue (from an audit or a retro, only with approval): `gh issue create --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --title "{title}" --body-file {tmpfile} --label "{category},area:{a}"` — `{category}` is `enhancement`, `documentation` or `chore` for non-defect work, or `type:{type}` for a defect. Set no `priority/*` and no `triaged`: triage sets them. Then read the issue back (`gh issue view {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --json title,labels,body`) and compare the body with `{tmpfile}`. Used 2026-11-25 for #82 to #86.
+- Create issue (from an audit or a retro, only with approval): `gh issue create --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --title "{title}" --body-file {tmpfile} --label "{category},area:{a}"` — `{category}` is `enhancement`, `documentation` or `chore` for non-defect work, or `type:{type}` for a defect. Set no `priority/*` and no `triaged`: triage sets them. Then read the issue back (`gh issue view {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --json title,labels,body`) and compare the body with `{tmpfile}`. The new issue has no item in project GenvidTechnologies/1: triage adds it through "Set road block". Used 2026-11-25 for #82 to #86; none of them had a project item at triage.
 - Link dependency: `gh issue comment {id} --repo GenvidTechnologies/claude-code-plugin-gvt-wiki --body "Blocked by #{other}"`
 - Read road block (read-only): `gh api graphql -F n={id} -f query='query($n:Int!){organization(login:"GenvidTechnologies"){projectV2(number:1){field(name:"Road block"){... on ProjectV2SingleSelectField{options{name description}}}}} repository(owner:"GenvidTechnologies",name:"claude-code-plugin-gvt-wiki"){issue(number:$n){projectItems(first:20){nodes{project{number} roadBlock:fieldValueByName(name:"Road block"){... on ProjectV2ItemFieldSingleSelectValue{name}}}}}}}'` — prints every option of the `Road block` field with its description, and the issue's project items with their `Road block` value. Use the item of project number 1. No item of project 1 means the issue is not in the project; a `null` value means the field is not set. The query reads the issue's `projectItems`, which lists only projects of the repository's owner; project 1 is one of them. Run 2026-11-21 on #66: 32 options, and the item of project 1 with its road block.
 - Set road block (only with the coach's approval): `node <gvt-fleet workspace>/.claude/skills/groom-road-blocks/scripts/set.mjs --dir <scratch folder> --project GenvidTechnologies/1 "GenvidTechnologies/claude-code-plugin-gvt-wiki#{id}={roadBlock}"`, where `<gvt-fleet workspace>` is the absolute path of the gvt-fleet workspace root. `{roadBlock}` is the full option name, for example `G3 maintain-wiki and wiki-lint are trustworthy`. The script has no dry run: it writes at once. It creates the `--dir` folder for its query files, adds the issue to the project when it is missing, reads the value back, and prints `OK` for each issue.
